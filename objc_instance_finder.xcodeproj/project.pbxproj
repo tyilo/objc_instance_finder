@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		55B392B819FAA9CE0071BF8B /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 55B392B719FAA9CE0071BF8B /* main.c */; };
+		55B392BF19FAA9FC0071BF8B /* test.m in Sources */ = {isa = PBXBuildFile; fileRef = 55B392BE19FAA9FC0071BF8B /* test.m */; };
+		55B392C219FAAAA20071BF8B /* objc_instance_finder.m in Sources */ = {isa = PBXBuildFile; fileRef = 55B392C019FAAAA20071BF8B /* objc_instance_finder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +25,9 @@
 
 /* Begin PBXFileReference section */
 		55B392B419FAA9CE0071BF8B /* objc_instance_finder */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = objc_instance_finder; sourceTree = BUILT_PRODUCTS_DIR; };
-		55B392B719FAA9CE0071BF8B /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		55B392BE19FAA9FC0071BF8B /* test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = test.m; sourceTree = "<group>"; };
+		55B392C019FAAAA20071BF8B /* objc_instance_finder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = objc_instance_finder.m; sourceTree = "<group>"; };
+		55B392C119FAAAA20071BF8B /* objc_instance_finder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = objc_instance_finder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +60,9 @@
 		55B392B619FAA9CE0071BF8B /* objc_instance_finder */ = {
 			isa = PBXGroup;
 			children = (
-				55B392B719FAA9CE0071BF8B /* main.c */,
+				55B392BE19FAA9FC0071BF8B /* test.m */,
+				55B392C019FAAAA20071BF8B /* objc_instance_finder.m */,
+				55B392C119FAAAA20071BF8B /* objc_instance_finder.h */,
 			);
 			path = objc_instance_finder;
 			sourceTree = "<group>";
@@ -118,7 +123,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55B392B819FAA9CE0071BF8B /* main.c in Sources */,
+				55B392C219FAAAA20071BF8B /* objc_instance_finder.m in Sources */,
+				55B392BF19FAA9FC0071BF8B /* test.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +208,7 @@
 		55B392BC19FAA9CE0071BF8B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -209,6 +216,7 @@
 		55B392BD19FAA9CE0071BF8B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -232,6 +240,7 @@
 				55B392BD19FAA9CE0071BF8B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
