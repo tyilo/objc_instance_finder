@@ -1,1 +1,1 @@
-NSHashTable *find_instances_of_class(Class cls, BOOL include_subclasses);
+NSHashTable *find_instances_of_class(Class class, BOOL include_subclasses);
