@@ -29,3 +29,9 @@ TestClass *obj2 = [TestClass new];
 
 NSLog(@"%d, %d", [instances containsObject:obj1], [instances containsObject:obj2]); // 1, 0
 ```
+
+Making
+------
+
+Requires a [modified version of theos](https://github.com/Tyilo/theos) to build a static library.
+The environment variable `THEOS` must be set to the path of theos.
