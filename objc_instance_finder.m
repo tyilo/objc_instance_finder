@@ -89,12 +89,19 @@ void malloc_enumerator(task_t task, void *data, unsigned type, vm_range_t *range
 	}
 }
 
+kern_return_t memory_reader(task_t remote_task, vm_address_t remote_address, vm_size_t size, void **local_memory) {
+	*local_memory = (void *)remote_address;
+	return KERN_SUCCESS;
+}
+
 NSHashTable *find_instances_of_class_helper(NSArray *classes) {
 	NSHashTable *instances = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory | NSPointerFunctionsOpaquePersonality];
 
+	task_t task = mach_task_self();
+
 	vm_address_t *malloc_zone_addresses;
 	unsigned malloc_zone_count;
-	kern_return_t ret = malloc_get_all_zones(0, NULL, &malloc_zone_addresses, &malloc_zone_count);
+	kern_return_t ret = malloc_get_all_zones(task, memory_reader, &malloc_zone_addresses, &malloc_zone_count);
 	if(ret != KERN_SUCCESS) {
 		return instances;
 	}
@@ -104,7 +111,7 @@ NSHashTable *find_instances_of_class_helper(NSArray *classes) {
 	for(int i = 0; i < malloc_zone_count; i++) {
 		malloc_zone_t *zone = (malloc_zone_t *)malloc_zone_addresses[i];
 		if(zone && zone->introspect && zone->introspect->enumerator) {
-			zone->introspect->enumerator(0, array, MALLOC_PTR_IN_USE_RANGE_TYPE, (vm_address_t)zone, NULL, malloc_enumerator);
+			zone->introspect->enumerator(task, array, MALLOC_PTR_IN_USE_RANGE_TYPE, (vm_address_t)zone, memory_reader, malloc_enumerator);
 		}
 	}
 
