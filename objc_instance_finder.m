@@ -51,6 +51,8 @@ bool is_objc_object(const void *address) {
 		return true;
 	}
 
+	// We already know that the input is a pointer to a class
+	// so we can safely de-reference it
 	void *class = *(void **)address;
 	if(!is_objc_class(class)) {
 		return false;
@@ -72,37 +74,48 @@ BOOL is_class_recursive_subclass(Class class, Class superclass) {
 	return NO;
 }
 
+void malloc_enumerator(task_t task, void *data, unsigned type, vm_range_t *ranges, unsigned count) {
+	NSArray *array = (NSArray *)data;
+	NSArray *classes = array[0];
+	NSHashTable *instances = array[1];
+
+	for(unsigned i = 0; i < count; i++) {
+		vm_range_t range = ranges[i];
+		void *obj = (void *)range.address;
+		void *class = *(void **)obj;
+		if([classes indexOfObjectIdenticalTo:class] != NSNotFound && is_objc_object(obj)) {
+			[instances addObject:obj];
+		}
+	}
+}
+
 NSHashTable *find_instances_of_class_helper(NSArray *classes) {
 	NSHashTable *instances = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory | NSPointerFunctionsOpaquePersonality];
 
-	vm_map_t task = mach_task_self();
-	mach_vm_address_t address = 0;
-	mach_vm_size_t size = 0;
-	vm_region_basic_info_data_64_t info;
-	mach_msg_type_number_t infoCnt = VM_REGION_BASIC_INFO_COUNT_64;
-	mach_port_t object_name;
+	vm_address_t *malloc_zone_addresses;
+	unsigned malloc_zone_count;
+	kern_return_t ret = malloc_get_all_zones(0, NULL, &malloc_zone_addresses, &malloc_zone_count);
+	if(ret != KERN_SUCCESS) {
+		return instances;
+	}
 
-	while(mach_vm_region(task, &address, &size, VM_REGION_BASIC_INFO_64, (vm_region_info_t)&info, &infoCnt, &object_name) == KERN_SUCCESS) {
-		if((info.protection & VM_PROT_READ) && (info.protection & VM_PROT_WRITE)) {
-			for(Class c in classes) {
-				mach_vm_address_t ptr = address;
-				while((ptr = (mach_vm_address_t)memmem((void *)ptr, address + size - ptr - 1, &c, sizeof(Class)))) {
-					void *obj = (void *)ptr;
-					if(is_objc_object(obj)) {
-						[instances addObject:obj];
-					}
-					ptr++;
-				}
-			}
+	NSArray *array = @[classes, instances];
+
+	for(int i = 0; i < malloc_zone_count; i++) {
+		malloc_zone_t *zone = (malloc_zone_t *)malloc_zone_addresses[i];
+		if(zone && zone->introspect && zone->introspect->enumerator) {
+			zone->introspect->enumerator(0, array, MALLOC_PTR_IN_USE_RANGE_TYPE, (vm_address_t)zone, NULL, malloc_enumerator);
 		}
-
-		address += size;
 	}
 
 	return instances;
 }
 
 NSHashTable *find_instances_of_class(Class class, BOOL include_subclasses) {
+	if(!is_objc_class(class)) {
+		return [NSHashTable new];
+	}
+
 	NSHashTable *instances;
 	NSMutableArray *possible_classes = [NSMutableArray new];
 
