@@ -1,6 +1,6 @@
 #include <Foundation/Foundation.h>
 
-#include "objc_instance_finder.h"
+#include "../objc_instance_finder.h"
 
 @interface TestClass : NSObject
 @end
@@ -31,12 +31,13 @@ void test(Class class, BOOL include_subclasses, NSArray *knownInstances) {
 	for(id obj in knownInstances) {
 		[knownInstancesTable addObject:obj];
 	}
+
 	assert([knownInstancesTable isSubsetOfHashTable:instances]);
 
 	[instances minusHashTable:knownInstancesTable];
 
 	if(instances.count != 0) {
-		NSLog(@"Found %lu unknown instances of %@%@ at runtime:", instances.count, class, include_subclasses? @"": @" or subclasses");
+		NSLog(@"Found %lu unknown instances of %@%@ at runtime:", (unsigned long)instances.count, class, include_subclasses? @"": @" or subclasses");
 		for(id obj in instances) {
 			NSLog(@"\t%@", obj);
 		}
@@ -68,7 +69,7 @@ int main(int argc, const char *argv[]) {
 		test([TestClass class], YES, [instances1 arrayByAddingObjectsFromArray:instances2]);
 
 		NSHashTable *strings = find_instances_of_class([NSString class], YES);
-		NSLog(@"Found %lu strings:", strings.count);
+		NSLog(@"Found %lu strings:", (unsigned long)strings.count);
 		for(NSString *s in strings) {
 			@try {
 				NSLog(@"\t%@", s);
